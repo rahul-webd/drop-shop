@@ -4,15 +4,20 @@ import SearchBar from "./SearchBar";
 import Spinner from "./Spinner";
 
 const BigSelect = ({ data }: { data: Data | undefined}) => {
-    const d: string[] = data?.data;
-    const e: string | undefined = data?.error;
+    let d: string[] = []
+    let e: string = ''
+
+    if (data) {
+        d = Object.values(data.data);
+        e = data.error;
+    }
 
     return (
-        <section className="border border-pink-300 p-4
-            rounded-2xl">
+        <section className="p-4 rounded-2xl bg-gray-900 border
+            border-blue-400">
             <SearchBar />
-            <div className="overflow-auto max-h-40 m-4 bg-gray-800
-                rounded-2xl p-2">
+            <div className="overflow-auto max-h-44 m-4 bg-gray-800
+                rounded-2xl p-2 ">
                 {
                     data
                         ? d
@@ -31,7 +36,7 @@ const BigSelect = ({ data }: { data: Data | undefined}) => {
 
 const Option = ({ name }: { name: string }) => {
     return (
-        <div className="text-center m-1 font-medium text-pink-50">
+        <div className="text-center m-1 text-blue-100">
             { name }
         </div>
     )

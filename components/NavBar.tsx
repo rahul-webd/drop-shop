@@ -12,15 +12,15 @@ type NavItem = {
 
 const classNavIcon: string = 'w-5 md:w-8';
 const classNavIconExpanded: string = 'mr-2'
-const classActive: string = `flex px-4 py-2 rounded-xl
-    md:justify-center border border-pink-400`;
-const classNav: string = `fixed bottom-0 500-x-0 w-screen md:left-0 
+const classActive: string = `flex px-4 py-2 rounded-2xl
+    md:justify-center border border-blue-400`;
+const classNav: string = `fixed bottom-0 w-screen md:left-0 
     md:inset-y-0 md:h-screen md:w-40`;
 const classNavList: string = `flex py-4 md:py-0 flex-row 
     justify-around items-center md:flex-col md:justify-start 
-    md:items-start md:pt-32 md:h-full md:px-4
-    md:border-r border-pink-400 text-pink-400`;
-const classItem: string = `flex items-center mb-0 md:mb-12`;
+    md:items-start md:pt-32 md:h-full md:px-4 bg-gray-900
+    md:border-r border-gray-800 text-blue-300`;
+const classItem: string = `flex items-center mb-0 md:mb-12 capitalize`;
 
 const NavBar = () => {
     const navItems: NavItem[] = [

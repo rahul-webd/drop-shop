@@ -38,6 +38,29 @@ export interface LimitItem {
 }
 
 export interface ShopItem {
-    item: MenuItem | EmptyObject,
-    limits: LimitItem | EmptyObject
+    item: MenuItem,
+    limits: LimitItem
+}
+
+export interface ShopItems {
+    [memo: string]: ShopItem
+}
+
+export interface Drop {
+    item: MenuItem,
+    limits: LimitItem,
+    templateData: any
+}
+
+export type fetchOptions = {
+    method: 'POST' | 'GET' | 'PUT' | 'DELETE' | 'OPTIONS',
+    headers: {
+        'Content-Type': 'application/json'
+    },
+    body: string
+}
+
+export type Text = { 
+    text: string, 
+    className: string | undefined
 }

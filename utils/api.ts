@@ -1,19 +1,49 @@
 import { shopApi } from "../data";
-import { Data } from "../schemas/global";
+import { Data, fetchOptions } from "../schemas/global";
 import { fetcher } from "./helpers";
 
 export const getCollectionNames = async () => {
     const endpoint: string = `get_collection_names`;
 
-    const data: Data = await fetcher(`${shopApi}/${endpoint}`);
+    const data: Data = await fetcher(`${shopApi}/${endpoint}`, undefined);
 
     return data;
 }
 
-export const getShopItems = async () => {
+export const getShopItems = async (lowerBound: string, limit: number) => {
     const endpoint: string = `get_drops`;
 
-    const data: Data = await fetcher(`${shopApi}/${endpoint}`);
+    const options: fetchOptions = getPostOptions({
+        lowerBound,
+        limit
+    })
+
+    const data: Data = await fetcher(`${shopApi}/${endpoint}`, options);
 
     return data;
+}
+
+export const getTemplates = async (memo: string | undefined, 
+    ids: string[] | undefined) => {
+    const endpoint: string = 'get_templates';
+
+    const options: fetchOptions = getPostOptions({
+        memo,
+        ids
+    });
+
+    const data: Data = await fetcher(`${shopApi}/${endpoint}`, options);
+
+    return data;
+}
+
+const getPostOptions = (body: any): fetchOptions => {
+
+    return {
+        method: 'POST',
+        headers: {
+            "Content-Type": 'application/json'
+        },
+        body: JSON.stringify(body)
+    }
 }
