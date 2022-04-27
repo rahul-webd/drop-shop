@@ -6,10 +6,23 @@ import { getCollectionNames, getShopItems,
 import type { NextPage } from "next";
 import ShopItem from "../components/ShopItem";
 import Container from "../components/Container";
+import Button from "../components/Button";
 
-const getData = async () => {
+const getData = async (dropKey: string) => {
     const collectionNames: Data = await getCollectionNames();
-    const shopItems: Data = await getShopItems('', 10);
+    const { drops, nextKey } = await getDrops(dropKey);
+
+    return {
+        collectionNames,
+        shopItems: {
+            drops,
+            lowerBound: nextKey
+        }
+    }
+}
+
+const getDrops = async (lowerBound: string) => {
+    const shopItems: Data = await getShopItems(lowerBound, 10);
     let templates: Data = {
         data: [],
         error: ''
@@ -33,11 +46,12 @@ const getData = async () => {
         }
     }
 
-    return {
-        collectionNames,
-        drops
-    }
-}
+    const nextKey = drops.length 
+        ? drops[drops.length - 1].item.Memo
+        : '';
+
+    return { drops, nextKey }
+} 
 
 const Shop: NextPage = () => {
     const [colData, setColData]: [
@@ -50,12 +64,15 @@ const Shop: NextPage = () => {
         setShopItems: Dispatch<SetStateAction<Drop[] | undefined>>
     ] = useState();
 
+    const [lowerBound, setLowerBound] = useState('');
+
     useEffect(() => {
         let isMounted = true;
 
-        getData().then(data => { 
+        getData(lowerBound).then(data => { 
             isMounted && setColData(data.collectionNames);
-            isMounted && setDrops(data.drops);
+            isMounted && setDrops(data.shopItems.drops);
+            isMounted && setLowerBound(data.shopItems.lowerBound);
         });
 
         return () => {
@@ -63,12 +80,21 @@ const Shop: NextPage = () => {
         }
     }, []);
 
+    const loadMore = () => {
+        getDrops(lowerBound).then(data => {
+            console.log(data.drops)
+            setDrops(drops ? drops.concat(data.drops): data.drops);
+            setLowerBound(data.nextKey);
+        });
+    }
+
     return (
         <section className="flex flex-col md:flex-row items-center
-            md:items-start m-8">
+            md:items-start m-8 relative">
             <SideBar colData={colData} />
-            <main>
-                <Container>
+            <main className='flex flex-col justify-center
+                items-center'>
+                <Container className="mb-4">
                     <>
                         {
                             drops?.map((drop, i) => {
@@ -79,16 +105,22 @@ const Shop: NextPage = () => {
                         }
                     </>
                 </Container>
+                <Button
+                    name="load more"
+                    variant="outline"
+                    onClick={loadMore}
+                    className='rounded-3xl'
+                    disabled={!lowerBound} />
             </main>
         </section>
     )
 }
 
-
 const SideBar = ({ colData }: { colData: Data | undefined }) => {
 
     return (
-        <section className="md:pt-16 md:mr-8 mb-8">
+        <section className="md:pt-16 md:mr-8 mb-8 md:sticky 
+            md:top-0 md:left-0">
             <BigSelect data={colData} />
         </section>
     )

@@ -1,4 +1,6 @@
+import { useEffect, useState } from "react";
 import { Drop } from "../schemas/global";
+import { isTimeEnded } from "../utils/helpers";
 import Button from "./Button";
 import H1 from "./H1";
 import H2 from "./H2";
@@ -8,7 +10,10 @@ import Tag from "./Tag";
 const ShopItem = ({ item }: { 
     item: Drop
 }) => {
-    
+    const [isDropEnded, setIsDropEnded] = useState(false);
+
+    const { limits } = item;
+
     const { 
         item: { 
             Memo, 
@@ -17,7 +22,20 @@ const ShopItem = ({ item }: {
             SchemaName
             },
         templateData: { immutable_data: { img, video, name } }
-        } = item
+        } = item;
+
+    useEffect(() => {
+        let isMounted = true;
+
+        if (limits) {
+            isMounted
+                && setIsDropEnded(isTimeEnded(limits.StopTime));
+        }
+
+        return () => {
+            isMounted = false;
+        }
+    }, []);
 
     return (
         <section className="bg-gray-900 m-4 flex flex-col justify-center
@@ -42,7 +60,21 @@ const ShopItem = ({ item }: {
                         <H2 
                             text={CollectionName} 
                             className='text-blue-300 mb-2' />
-                        <Tag text={SchemaName} className='mb-2' />
+                        <Tag text={SchemaName} className='mb-2 text-blue-300' />
+                        {
+                            limits
+                                && <div className="flex mb-2">
+                                    <Tag 
+                                        text={`${limits.LeftToSell} left`}
+                                        className='mr-2 text-yellow-400' />
+                                    {
+                                        isDropEnded
+                                            && <Tag
+                                                text='ended'
+                                                className='text-red-400' />
+                                    }
+                                </div>
+                            }
                         <H2 
                             text={
                                 `price: ${Number(quantity.split(' ')[0])
@@ -53,7 +85,8 @@ const ShopItem = ({ item }: {
                             name="buy"
                             onClick={undefined}
                             variant='filled'
-                            className="px-6 py-1" />
+                            className="px-6 py-1"
+                            disabled={isDropEnded} />
                     </div>
             }
         </section>

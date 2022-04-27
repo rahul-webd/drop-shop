@@ -29,7 +29,8 @@ const TopBar = () => {
             <Button name={ addr ? 'wallet' : 'login' } 
                 onClick={addr ? () => {} : login}
                 variant="outline"
-                className={undefined} />
+                className={undefined}
+                disabled={undefined} />
         </header>
     )
 }

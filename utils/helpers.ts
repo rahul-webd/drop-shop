@@ -10,3 +10,20 @@ export const fetcher = async (url: string,
 
     return { data, error }
 }
+
+const getCurrentTime = () => {
+    const d = new Date();
+    return d;
+}
+
+const getEpoch = (date: string) => {
+    const d = new Date(date);
+    return d;
+}
+
+export const isTimeEnded = (date: string) => {
+    const c = getCurrentTime();
+    const e = getEpoch(date);
+
+    return c >= e;
+}
