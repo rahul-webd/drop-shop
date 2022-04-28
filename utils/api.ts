@@ -37,6 +37,21 @@ export const getTemplates = async (memo: string | undefined,
     return data;
 }
 
+export const getCollectionDrops = async (colName: string, 
+    lowerBound: string, limit: number ) => {
+    const endpoint: string = 'get_collection_drops';
+
+    const options: fetchOptions = getPostOptions({
+        colName,
+        lowerBound,
+        limit
+    });
+
+    const data: Data = await fetcher(`${shopApi}/${endpoint}`, options);
+
+    return data;
+}
+
 const getPostOptions = (body: any): fetchOptions => {
 
     return {

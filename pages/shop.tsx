@@ -1,37 +1,39 @@
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import BigSelect from "../components/BigSelect";
 import { Data, Drop, ShopItems } from "../schemas/global";
-import { getCollectionNames, getShopItems, 
+import { getCollectionDrops, getCollectionNames, getShopItems, 
     getTemplates } from "../utils/api";
 import type { NextPage } from "next";
-import ShopItem from "../components/ShopItem";
 import Container from "../components/Container";
 import Button from "../components/Button";
+import Spinner from "../components/Spinner";
+import ShopItem from "../components/ShopItem";
 
-const getData = async (dropKey: string) => {
-    const collectionNames: Data = await getCollectionNames();
-    const { drops, nextKey } = await getDrops(dropKey);
+const defaultCol: string = 'all';
 
-    return {
-        collectionNames,
-        shopItems: {
-            drops,
-            lowerBound: nextKey
-        }
+const getDrops = async (colName: string, lowerBound: string) => {
+    let shopItems: Data;
+
+    if (colName === defaultCol) {
+        shopItems = await getShopItems(lowerBound, 10);
+    } else {
+        shopItems = await getCollectionDrops(colName, lowerBound, 10);
     }
-}
 
-const getDrops = async (lowerBound: string) => {
-    const shopItems: Data = await getShopItems(lowerBound, 10);
     let templates: Data = {
         data: [],
         error: ''
     }
     let drops: Drop[] = [];
 
-    if (shopItems && !shopItems.error) {
+    if (shopItems && !shopItems.error && shopItems.data) {
         const items: ShopItems = shopItems.data;
-        const ids: string[] = Object.keys(items);
+
+        const ids: string[] = [];
+
+        for (const name in items) {
+            ids.push(items[name].item.Memo);
+        }
 
         if (ids.length) {
             templates = await getTemplates(undefined, ids);
@@ -53,6 +55,14 @@ const getDrops = async (lowerBound: string) => {
     return { drops, nextKey }
 } 
 
+const getData = async () => {
+    const collectionNames: Data = await getCollectionNames();
+
+    return {
+        collectionNames
+    }
+}
+
 const Shop: NextPage = () => {
     const [colData, setColData]: [
         colData: Data | undefined,
@@ -60,19 +70,43 @@ const Shop: NextPage = () => {
     ] = useState();
 
     const [drops, setDrops]: [
-        shopItems: Drop[] | undefined,
-        setShopItems: Dispatch<SetStateAction<Drop[] | undefined>>
+        Drop[] | undefined,
+        Dispatch<SetStateAction<Drop[] | undefined>>
     ] = useState();
 
+    const [currentCol, setCurrentCol]: [
+        string,
+        Dispatch<SetStateAction<string>>
+    ] = useState('');
+
     const [lowerBound, setLowerBound] = useState('');
+
+    const changeCurrentCol = (name: string) => {
+        setCurrentCol(name);
+    }
+
+    const setDefaultCol = () => {
+        setCurrentCol(defaultCol);
+    }
+
+    const [fetchingNext, setFetchingNext] = useState(false);
+
+    const changeDrops = async (lowerBound: string) => {
+        await getDrops(currentCol, lowerBound).then(data => {
+            if (lowerBound) {
+                setDrops(prev => prev?.concat(data.drops));
+            } else {
+                setDrops(data.drops);
+            }
+            setLowerBound(data.nextKey);
+        });
+    }
 
     useEffect(() => {
         let isMounted = true;
 
-        getData(lowerBound).then(data => { 
+        getData().then(data => { 
             isMounted && setColData(data.collectionNames);
-            isMounted && setDrops(data.shopItems.drops);
-            isMounted && setLowerBound(data.shopItems.lowerBound);
         });
 
         return () => {
@@ -80,31 +114,54 @@ const Shop: NextPage = () => {
         }
     }, []);
 
+    useEffect(() => {
+        let isMounted = true;
+        
+        isMounted && setDrops(undefined);
+
+        changeDrops('');
+
+        return () => {
+            isMounted = false;
+        }
+    }, [currentCol]);
+
     const loadMore = () => {
-        getDrops(lowerBound).then(data => {
-            console.log(data.drops)
-            setDrops(drops ? drops.concat(data.drops): data.drops);
-            setLowerBound(data.nextKey);
-        });
+        setFetchingNext(true);
+        changeDrops(lowerBound).then(() => {
+            setFetchingNext(false);
+        })
     }
 
     return (
         <section className="flex flex-col md:flex-row items-center
-            md:items-start m-8 relative">
-            <SideBar colData={colData} />
+            md:items-start relative">
+            <SideBar 
+                colData={colData}
+                setSelect={changeCurrentCol}
+                setDefault={setDefaultCol} />
             <main className='flex flex-col justify-center
-                items-center'>
-                <Container className="mb-4">
+                items-center flex-grow'>
+                <Container className="mb-4 min-w-full">
                     <>
                         {
-                            drops?.map((drop, i) => {
-                                return (
-                                    <ShopItem item={drop} key={i} />
-                                )
-                            })
+                            drops
+                                ? drops.map((drop, i) => {
+                                    return (
+                                        <ShopItem item={drop} key={i} />
+                                    )
+                                })
+                                : <Spinner />
                         }
                     </>
                 </Container>
+                {
+                    fetchingNext
+                        ? <span className="mb-4">
+                            <Spinner />
+                        </span>
+                        : <></>
+                }
                 <Button
                     name="load more"
                     variant="outline"
@@ -116,12 +173,19 @@ const Shop: NextPage = () => {
     )
 }
 
-const SideBar = ({ colData }: { colData: Data | undefined }) => {
+const SideBar = ({ colData, setSelect, setDefault }: { 
+    colData: Data | undefined
+    setSelect: any,
+    setDefault: any
+}) => {
 
     return (
         <section className="md:pt-16 md:mr-8 mb-8 md:sticky 
             md:top-0 md:left-0">
-            <BigSelect data={colData} />
+            <BigSelect 
+                data={colData} 
+                setSelect={setSelect} 
+                setDefault={setDefault} />
         </section>
     )
 }

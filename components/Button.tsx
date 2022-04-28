@@ -12,12 +12,12 @@ const Button = ({ name, onClick, variant, className,
     let variantClasses: string = '';
 
     if (variant === "outline") {
-        variantClasses = `border border-blue-400 text-blue-300
-            hover:bg-blue-300 hover:text-blue-900 
-            disabled:border-blue-300`
+        variantClasses = `border border-green-300 text-green-300
+            hover:bg-green-400 hover:text-green-900 
+            disabled:border-green-200`
     } else if (variant === "filled") {
-        variantClasses = `bg-blue-400 hover:bg-blue-500 text-gray-900
-        font-medium disabled:bg-blue-300`
+        variantClasses = `bg-green-300 hover:bg-green-400 text-green-900
+        font-medium disabled:bg-green-200`
     }
 
     return (

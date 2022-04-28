@@ -19,7 +19,8 @@ const Media = ({ src, alt, h, w, type, provider }: {
     }
 
     return (
-        <div className={`${h} ${w} rounded relative`}>
+        <div className={`${h} ${w} rounded relative
+            bg-gray-300 overflow-hidden`}>
             {
                 !mediaLoaded
                     && <div className={`${h} ${w} bg-gray-700 absolute
@@ -38,7 +39,9 @@ const Media = ({ src, alt, h, w, type, provider }: {
                     && <img 
                             src={url} 
                             alt={alt || 'no image found'}
-                            className={`object-cover ${h} ${w} rounded`}
+                            className={`${h} ${w} rounded object-contain
+                                transition 
+                                duration-1000 hover:scale-150`}
                             onLoad={() => {
                                 setMediaLoaded(true)
                             }}
@@ -50,7 +53,7 @@ const Media = ({ src, alt, h, w, type, provider }: {
                     && <iframe
                             src={url}
                             title={alt || 'no video found'}
-                            className={`object-cover ${h} ${w} rounded`}
+                            className={`object-contain ${h} ${w} rounded`}
                             onLoad={() => {
                                 setMediaLoaded(true)
                             }}

@@ -4,7 +4,7 @@ import { Text } from "../schemas/global";
 const H1 = ({ text, className }: Text) => {
 
     return (
-        <p className={`font-medium ${className}`}>
+        <p className={`text-xl capitalize font-medium ${className}`}>
             { text }
         </p>
     )

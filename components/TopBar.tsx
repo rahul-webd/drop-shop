@@ -23,12 +23,12 @@ const TopBar = () => {
     }, [ual])
 
     return (
-        <header className="md:ml-40 flex justify-between
-            px-8 py-4 border-b border-gray-800">
+        <header className="md:ml-24 flex justify-between px-4
+            md:px-8 py-4 border-b border-gray-800">
             <SearchBar />
             <Button name={ addr ? 'wallet' : 'login' } 
                 onClick={addr ? () => {} : login}
-                variant="outline"
+                variant="filled"
                 className={undefined}
                 disabled={undefined} />
         </header>

@@ -2,8 +2,8 @@ import { useEffect, useState } from "react";
 import { Drop } from "../schemas/global";
 import { isTimeEnded } from "../utils/helpers";
 import Button from "./Button";
-import H1 from "./H1";
-import H2 from "./H2";
+import H3 from "./H3";
+import H4 from "./H4";
 import Media from "./Media";
 import Tag from "./Tag";
 
@@ -56,26 +56,31 @@ const ShopItem = ({ item }: {
             {
                 item.item
                     && <div className="flex flex-col items-center">
-                        <H1 text={name} className='mb-1 text-blue-100' />
-                        <H2 
+                        <H3 text={name} className='mb-1' />
+                        <H4 
                             text={CollectionName} 
-                            className='text-blue-300 mb-2' />
-                        <Tag text={SchemaName} className='mb-2 text-blue-300' />
+                            className='text-green-200 mb-2' />
+                        <Tag 
+                            text={SchemaName} 
+                            variant='primary'
+                            className='mb-2' />
                         {
                             limits
                                 && <div className="flex mb-2">
                                     <Tag 
                                         text={`${limits.LeftToSell} left`}
-                                        className='mr-2 text-yellow-400' />
+                                        className='mr-2'
+                                        variant="warning" />
                                     {
                                         isDropEnded
                                             && <Tag
                                                 text='ended'
-                                                className='text-red-400' />
+                                                className={undefined}
+                                                variant='danger' />
                                     }
                                 </div>
                             }
-                        <H2 
+                        <H4
                             text={
                                 `price: ${Number(quantity.split(' ')[0])
                                 .toFixed(0)} ${quantity.split(' ')[1]}`
