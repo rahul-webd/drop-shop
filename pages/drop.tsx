@@ -183,6 +183,27 @@ const DropPage: NextPage = () => {
                         </tbody>
                     </table>
                 </article>
+                <article className="bg-gray-800 capitalize
+                    px-8 py-4 mb-8 rounded-3xl flex justify-around">
+                    <H3
+                        text={
+                            `left: ${data?.drop?.limits?.
+                                LeftToSell !== undefined 
+                                ? data?.drop?.limits?.
+                                LeftToSell 
+                                : '--'}`
+                        }
+                        className={undefined} />
+                    <H3
+                        text={
+                            `max: ${data?.drop?.limits?.
+                                MaxToSell !== undefined
+                                ? data?.drop?.limits?.
+                                MaxToSell
+                                : '--'}`
+                        }
+                        className={undefined} />
+                </article>
                 <article className="flex flex-col items-center">
                     {
                         msLeft > 0
@@ -194,7 +215,7 @@ const DropPage: NextPage = () => {
                         name='buy'
                         onClick={() => {}}
                         variant='filled'
-                        className='px-12 text-lg'
+                        className='px-12 text-lg mb-16'
                         disabled={isDropEnded || msLeft !== 0} />
                 </article>
             </div>
