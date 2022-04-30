@@ -1,7 +1,7 @@
 import React from "react";
 import { Tag } from "../schemas/global";
 
-const Tag = ({ text, className, variant }: Tag) => {
+const Tag = ({ text, fontSize, className, variant }: Tag) => {
 
     let variantClasses: string = '';
 
@@ -19,7 +19,7 @@ const Tag = ({ text, className, variant }: Tag) => {
     }
 
     return (
-        <p className={`text-xs px-4 py-1 border ${variantClasses}
+        <p className={`${fontSize} px-4 py-1 border ${variantClasses}
             rounded-xl font-medium ${className}`}>
             { text }
         </p>

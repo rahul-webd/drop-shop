@@ -67,6 +67,7 @@ export type Text = {
 
 export type Tag = { 
     text: string, 
+    fontSize: string,
     className: string | undefined,
     variant: 'primary' | 'warning' | 'danger'
 }

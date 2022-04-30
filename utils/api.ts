@@ -52,6 +52,18 @@ export const getCollectionDrops = async (colName: string,
     return data;
 }
 
+export const getDrop = async (name: string) => {
+    const endpoint: string = 'get_drop';
+
+    const options: fetchOptions = getPostOptions({
+        name
+    });
+
+    const data: Data = await fetcher(`${shopApi}/${endpoint}`, options);
+
+    return data;
+}
+
 const getPostOptions = (body: any): fetchOptions => {
 
     return {

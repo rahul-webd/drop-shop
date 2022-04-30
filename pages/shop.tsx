@@ -12,11 +12,15 @@ import ShopItem from "../components/ShopItem";
 const defaultCol: string = 'all';
 
 const getDrops = async (colName: string, lowerBound: string) => {
-    let shopItems: Data;
+
+    let shopItems: Data = {
+        data: '',
+        error: ''
+    };
 
     if (colName === defaultCol) {
         shopItems = await getShopItems(lowerBound, 10);
-    } else {
+    } else if (colName) {
         shopItems = await getCollectionDrops(colName, lowerBound, 10);
     }
 
