@@ -71,3 +71,11 @@ export type Tag = {
     className: string | undefined,
     variant: 'primary' | 'warning' | 'danger'
 }
+
+export type AlertState = 'success' | 'warning' | 'danger' | 'processing' |
+    'closed' | 'info'
+
+export type Alert = {
+    state: AlertState,
+    message: string | undefined
+}

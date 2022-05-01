@@ -1,6 +1,6 @@
 import { NextPage } from "next";
 import { useRouter } from "next/router";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import Button from "../components/Button";
 import H1 from "../components/H1";
 import H2 from "../components/H2";
@@ -9,7 +9,9 @@ import Media from "../components/Media";
 import Tag from "../components/Tag";
 import { Data, ShopItem } from "../schemas/global";
 import { getDrop, getTemplates } from "../utils/api";
-import { convertMillisToTime, getMillisLeft, isTimeEnded } from "../utils/helpers";
+import { convertMillisToTime, getMillisLeft, 
+    isTimeEnded } from "../utils/helpers";
+import { MainContext } from '../components/Layout';
 
 type DropData = {
     drop: ShopItem | undefined,
@@ -59,6 +61,8 @@ const DropPage: NextPage = () => {
     const [msLeft, setMsLeft] = useState(0);
     const [startTimeLeft, setStartTimeLeft] = 
         useState('- days, --:--:--');
+
+    const { buyShopItem } = useContext(MainContext);
 
     useEffect(() => {
         let isMounted = true;
@@ -169,9 +173,7 @@ const DropPage: NextPage = () => {
                                                 { k }
                                             </td>
                                             <td className={
-                                                `${((k === 'img' ||
-                                                k === 'video') &&
-                                                'break-all') || ''} py-2
+                                                `break-all py-2
                                                 px-4`
                                             }>
                                                 { data?.immData[k] }
@@ -211,9 +213,23 @@ const DropPage: NextPage = () => {
                                     text={`starting in ${startTimeLeft}`}
                                     className='mb-4' />
                     }
+                    <H2
+                        text={`price: ${Number(data?.drop?.item?.Price
+                            .quantity.split(' ')[0]).toFixed(0)} 
+                            ${data?.drop?.item?.Price.quantity.
+                                split(' ')[1] || '--'}`}
+                        className='capitalize mb-4' />
                     <Button
                         name='buy'
-                        onClick={() => {}}
+                        onClick={() => {
+                            if (data && data.drop && data.drop.item) {
+                                const { Price: {
+                                    quantity,
+                                    contract
+                                }, Memo } = data.drop.item;
+                                buyShopItem(quantity, contract, Memo);
+                            }
+                        }}
                         variant='filled'
                         className='px-12 text-lg mb-16'
                         disabled={isDropEnded || msLeft !== 0} />
