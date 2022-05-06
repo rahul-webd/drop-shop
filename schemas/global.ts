@@ -61,7 +61,7 @@ export type fetchOptions = {
 }
 
 export type Text = { 
-    text: string, 
+    text: string | (() => string), 
     className: string | undefined
 }
 
@@ -78,4 +78,63 @@ export type AlertState = 'success' | 'warning' | 'danger' | 'processing' |
 export type Alert = {
     state: AlertState,
     message: string | undefined
+}
+
+export type ValidCpuTokens = 'WAX' | 'STEAK'
+
+export type CpuConfig = {
+    CPUBoostPerAsset: string,
+    boostLimit: string,
+    depositAsset: string,
+    durationInMinutes: number,
+    ownerContract: string,
+    rewardPerDepositAsset: {
+        contract: string,
+        quantity: string
+    }[]
+}
+
+type Pool = {
+    contract: string,
+    quantity: string
+}
+
+export type ExchRate = {
+    fee: number,
+    fee_contract: string,
+    id: number,
+    pool1: Pool,
+    pool2: Pool,
+    supply: string
+}
+
+export type EosjsRes = {
+    rows: any[],
+    more: boolean,
+    next_key: any
+}
+
+export type SwapFactor = {
+    factor: number,
+    sym1: string,
+    sym2: string
+}
+
+export type Quantity = {
+    value: number,
+    symbol: string
+}
+
+export type Tool = {
+    name: string,
+    path: string,
+    image: string | undefined,
+    bgColor: string,
+    textColor: string
+}
+
+export type ValidCpuConfig = 0 | 1
+
+export type Transaction = {
+    transactionId: string
 }
