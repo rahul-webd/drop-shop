@@ -18,11 +18,12 @@ const Tools: NextPage = () => {
         <section>
             {
                 tools.map(({ name, path, image, bgColor, 
-                    textColor }: Tool) => {
+                    textColor }: Tool, i: number) => {
 
                     return (
                         <Tool name={name} path={path} image={image}
-                            bgColor={bgColor} textColor={textColor} />
+                            bgColor={bgColor} textColor={textColor}
+                            key={i} />
                     )
                 })
             }
