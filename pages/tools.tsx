@@ -34,7 +34,7 @@ const Tools: NextPage = () => {
 const Tool = ({ name, path, image, bgColor, textColor }: Tool) => {
 
     return (
-        <section className={`m-4 rounded-xl bg-purple-300 shadow-lg
+        <section className={`m-4 rounded-xl shadow-lg
             flex ${bgColor}`}>
             <Link href={path}>
                 <a className="w-full">

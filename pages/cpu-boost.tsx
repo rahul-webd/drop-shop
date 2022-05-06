@@ -156,7 +156,7 @@ const CpuBoost = () => {
         <section className="text-blue-200 flex flex-col
             items-center justify-center">
             <article className="flex flex-col mt-8 md:mt-16 shadow-2xl
-                border border-blue-300 p-4 md:p-16 rounded-3xl
+                md:border border-blue-300 p-4 md:p-16 rounded-3xl
                 justify-center items-center text-center
                 transition duration-300 w-full md:w-4/5 lg:w-2/3">
                 {
@@ -175,7 +175,7 @@ const CpuBoost = () => {
                                         type="number"
                                         step={1}
                                         min={0}
-                                        className="rounded-l-2xl p-2 font-medium"
+                                        className="rounded-l-2xl p-2 font-medium w-40"
                                         placeholder={config[curConfig].depositAsset}
                                         value={amt}
                                         onChange={e => {
