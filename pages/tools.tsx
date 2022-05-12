@@ -1,6 +1,6 @@
 import { NextPage } from "next";
 import Link from "next/link";
-import H2 from "../components/H2";
+import H2 from "../components/text/H2";
 import { Tool } from "../schemas/global";
 
 const Tools: NextPage = () => {
@@ -9,8 +9,8 @@ const Tools: NextPage = () => {
             name: 'CPU Boost',
             path: '/cpu-boost',
             image: undefined,
-            bgColor: 'bg-blue-300',
-            textColor: 'text-blue-900'
+            bgColor: 'bg-gray-700',
+            textColor: 'text-gray-400'
         }
     ]
 
@@ -34,11 +34,11 @@ const Tools: NextPage = () => {
 const Tool = ({ name, path, image, bgColor, textColor }: Tool) => {
 
     return (
-        <section className={`m-4 rounded-xl shadow-lg
+        <section className={`rounded-xl shadow-lg
             flex ${bgColor}`}>
             <Link href={path}>
                 <a className="w-full">
-                    <div className="p-8">
+                    <div className="p-4">
                         <H2
                             text={name}
                             className={`${textColor}`} />

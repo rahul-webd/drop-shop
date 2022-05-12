@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
-import { Alert } from "../schemas/global";
-import H2 from "./H2";
-import Spinner from "./Spinner";
-import Button from './Button';
+import { AlertParams } from "../../schemas/global";
+import H2 from "../text/H2";
+import Spinner from "../Spinner";
+import Button from '../Button';
 
-const AlertBox = ({ state, message }: Alert) => {
+const AlertBox = ({ state, message, closeAlert, 
+    className }: AlertParams) => {
+
     const [stateClasses, setStateClasses] = useState<string>('');
-
-    const Hidden = 'hidden';
 
     useEffect(() => {
         let isMounted = true;
@@ -16,7 +16,7 @@ const AlertBox = ({ state, message }: Alert) => {
         switch (state) {
 
             case 'closed':
-                s = Hidden;
+                s = 'hidden';
                 break;
                 
             case 'danger':
@@ -56,7 +56,7 @@ const AlertBox = ({ state, message }: Alert) => {
             <article className={`py-8 px-4 rounded-3xl shadow-2xl
                 border-2 capitalize font-medium ${stateClasses} flex 
                 justify-center text-center w-full md:w-1/2 
-                bg-gray-900 mx-4 break-all`}>
+                bg-gray-900 mx-4 break-all ${className}`}>
                 {
                     state === 'processing'
                         ? <Spinner />
@@ -66,7 +66,7 @@ const AlertBox = ({ state, message }: Alert) => {
                                 className='mb-8 text-base md:text-lg' />
                             <Button
                                 name='OK'
-                                onClick={() => {setStateClasses(Hidden)}}
+                                onClick={() => {closeAlert}}
                                 variant='filled'
                                 className='px-8 text-sm'
                                 disabled={undefined} />

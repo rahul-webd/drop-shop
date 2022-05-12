@@ -1,5 +1,5 @@
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
-import BigSelect from "../components/BigSelect";
+import BigSelect from "../components/filters/BigSelect";
 import { Data, Drop, ShopItems } from "../schemas/global";
 import { getCollectionDrops, getCollectionNames, getShopItems, 
     getTemplates } from "../utils/api";
@@ -7,7 +7,7 @@ import type { NextPage } from "next";
 import Container from "../components/Container";
 import Button from "../components/Button";
 import Spinner from "../components/Spinner";
-import ShopItem from "../components/ShopItem";
+import ShopItem from "../components/shop/ShopItem";
 
 const defaultCol: string = 'all';
 

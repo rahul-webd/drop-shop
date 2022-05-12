@@ -1,7 +1,7 @@
 import React from "react";
-import { Text } from "../schemas/global";
+import { Text } from "../../schemas/global";
 
-const H4 = ({ text, className }: Text) => {
+const H3 = ({ text, className }: Text) => {
 
     let t: string = '';
 
@@ -12,10 +12,10 @@ const H4 = ({ text, className }: Text) => {
     }
 
     return (
-        <p className={`text-sm font-medium ${className}`}>
+        <p className={`font-medium ${className}`}>
             { t }
         </p>
     )
 }
 
-export default H4;
+export default H3;

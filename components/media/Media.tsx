@@ -1,26 +1,27 @@
 import { useState } from "react";
-import Spinner from "./Spinner";
+import { Media } from "../../schemas/global";
+import Spinner from "../Spinner";
 
-const Media = ({ src, alt, h, w, type, provider }: {
-    src: string | undefined,
-    alt: string | undefined,
-    h: string,
-    w: string,
-    type: 'img' | 'video'
-    provider: 'ipfs'
-}) => {
+const Media = ({ src, alt, h, w, type, provider, className }: Media) => {
+
     const [mediaLoaded, setMediaLoaded] = useState(false);
     const [err, setErr] = useState('');
+
+    const ipfs = 'https://ipfs.io/ipfs';
+    const resizedIpfs = 'http://ipfs-resizer.ledgerwise.io/api/v1/resized';
+    const size = '200';
 
     let url: string = ``;
 
     if (provider === 'ipfs') {
         url = `https://ipfs.io/ipfs/${src}`;
+    } else if (provider === 'resized') {
+        url = `${resizedIpfs}?cid=${src}&size=${size}`;
     }
 
     return (
         <div className={`${h} ${w} rounded relative
-            bg-gray-300 overflow-hidden`}>
+            bg-gray-300 overflow-hidden ${className}`}>
             {
                 !mediaLoaded
                     && <div className={`${h} ${w} bg-gray-700 absolute

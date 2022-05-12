@@ -1,4 +1,5 @@
-import { Data, fetchOptions, Quantity, SwapFactor } from "../schemas/global";
+import { AlertStateParams, Data, fetchOptions, Quantity, 
+    SwapFactor } from "../schemas/global";
 import { JsonRpc } from 'eosjs';
 import { rpcProviders } from "../data";
 
@@ -191,4 +192,53 @@ export const transact = async (ual: any, code: string, name: string,
     console.log(res)
 
     return res;
+}
+
+export const addAmpersand = (query: string): string => {
+
+    if (query) {
+
+        return query += '&'
+    } else {
+
+        return query;
+    }
+}
+
+export const closeAlertParams: AlertStateParams = {
+    state: 'closed',
+    message: undefined
+}
+
+export const loginAlertParams: AlertStateParams = {
+    state: 'warning',
+    message: 'please login'
+}
+
+export const processingAlertParams: AlertStateParams = {
+    state: 'processing',
+    message: undefined
+}
+
+export const getErrorAlertParams 
+    = (message: string): AlertStateParams => {
+
+    return {
+        state: 'danger',
+        message
+    }
+}
+
+export const getSuccessAlertParams
+    = (message: string): AlertStateParams => {
+
+    return {
+        state: 'success',
+        message
+    }
+}
+
+export const noDataFoundParams: AlertStateParams = {
+    state: 'warning',
+    message: 'no data found'
 }

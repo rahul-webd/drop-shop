@@ -1,8 +1,8 @@
 import type { NextPage } from 'next'
 import Head from 'next/head'
 import Container from '../components/Container'
-import H1 from '../components/H1'
-import Media from '../components/Media'
+import H1 from '../components/text/H1'
+import Media from '../components/media/Media'
 
 const Home: NextPage = () => {
   return (
@@ -21,7 +21,8 @@ const Home: NextPage = () => {
             h='h-full'
             w='w-full'
             type='img'
-            provider='ipfs' />
+            provider='ipfs'
+            className='' />
         </Container>
         <Container className='mb-8 px-8'>
           <H1 text='top drops' className='mb-4 w-full' />

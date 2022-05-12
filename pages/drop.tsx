@@ -2,10 +2,10 @@ import { NextPage } from "next";
 import { useRouter } from "next/router";
 import { useState, useEffect, useContext } from "react";
 import Button from "../components/Button";
-import H1 from "../components/H1";
-import H2 from "../components/H2";
-import H3 from "../components/H3";
-import Media from "../components/Media";
+import H1 from "../components/text/H1";
+import H2 from "../components/text/H2";
+import H3 from "../components/text/H3";
+import Media from "../components/media/Media";
 import Tag from "../components/Tag";
 import { Data, ShopItem } from "../schemas/global";
 import { getDrop, getTemplates } from "../utils/api";
@@ -130,18 +130,19 @@ const DropPage: NextPage = () => {
                         mb-4">
                         {
                             <Media
-                            src={
-                                data?.immData.img || 
-                                    data?.immData.video
-                            }
-                            alt={data?.immData.name || 'name'}
-                            h='h-48 md:h-60 lg:h-76 xl:h-96'
-                            w='w-48 md:w-60 lg:w-76 xl:w-96'
-                            type={
-                                (data?.immData.video && 'video') ||
-                                'img'
-                            }
-                            provider='ipfs' />
+                                src={
+                                    data?.immData.img || 
+                                        data?.immData.video
+                                }
+                                alt={data?.immData.name || 'name'}
+                                h='h-48 md:h-60 lg:h-76 xl:h-96'
+                                w='w-48 md:w-60 lg:w-76 xl:w-96'
+                                type={
+                                    (data?.immData.video && 'video') ||
+                                    'img'
+                                }
+                                provider='ipfs'
+                                className="" />
                         }
                     </article>
                     <article className="flex flex-col items-center

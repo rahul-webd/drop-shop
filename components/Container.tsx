@@ -6,7 +6,7 @@ const Container = ({ children, className }: {
 }) => {
     return (
         <section className={`bg-gray-800 p-4 rounded-2xl flex flex-wrap
-        justify-center ${className}`}>
+            justify-center ${className}`}>
             { children }
         </section>
     )

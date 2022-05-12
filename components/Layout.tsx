@@ -1,10 +1,12 @@
-import { cloneElement, useState, createContext, useContext } from "react";
-import { Alert, Data } from "../schemas/global";
+import { cloneElement, useState, createContext, useContext, 
+    useEffect } from "react";
+import { AlertStateParams, Data } from "../schemas/global";
 import { buy } from "../utils/shop";
-import AlertBox from "./AlertBox";
-import NavBar from "./NavBar";
-import TopBar from "./TopBar";
+import AlertBox from "./alerts/AlertBox";
+import NavBar from "./appBars/NavBar";
+import TopBar from "./appBars/TopBar";
 import { UALContext } from 'ual-reactjs-renderer';
+import { closeAlertParams } from "../utils/helpers";
 
 type MainContext = any;
 const mainContextVal: any = {}
@@ -12,12 +14,22 @@ const mainContextVal: any = {}
 export const MainContext = createContext(mainContextVal);
 
 const Layout = ({ children }: any) => {
-    const [alert, setAlert] = useState<Alert>({
+    const [alert, setAlert] = useState<AlertStateParams>({
         state: 'closed',
         message: undefined
     });
+    const [address, setAddress] = useState<string>();
 
-    const ual = useContext(UALContext);
+    const ual: any = useContext(UALContext);
+
+    useEffect(() => {
+
+        if (ual && ual.activeUser) {
+
+            const addr: string = ual.activeUser.accountName;
+            setAddress(addr);
+        }
+    }, [ual]);
 
     const buyShopItem = async (quantity: string, contract: string,
         memo: string) => {
@@ -50,17 +62,32 @@ const Layout = ({ children }: any) => {
             });
         }
     }
+
+    const closeAlert = () => {
+
+        setAlert(closeAlertParams);
+    }
     
     return (
-        <section className="min-h-screen text-green-50">
+        <section 
+            className="min-h-screen text-green-50">
             <TopBar />
-            <MainContext.Provider value={ { 
+            <MainContext.Provider value={{ 
+                    ual,
+                    address,
                     setAlert: setAlert,
                     buyShopItem: buyShopItem
-                } }>
-                <main className="mb-20 md:ml-24 md:mb-0 p-8">
-                    { cloneElement(children) }
-                    <AlertBox state={alert.state} message={alert.message} />
+                }}>
+                <main className="mb-20 md:ml-24 md:mb-0 p-8
+                    flex flex-col items-center">
+                    <main className="container">
+                        { children }
+                    </main>
+                    <AlertBox 
+                        state={alert.state} 
+                        closeAlert={closeAlert}
+                        message={alert.message}
+                        className={undefined} />
                 </main>
             </MainContext.Provider>
             <NavBar />

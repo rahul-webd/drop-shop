@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from "react";
-import H1 from "../components/H1";
-import H2 from "../components/H2";
+import H1 from "../components/text/H1";
+import H2 from "../components/text/H2";
 import { CpuConfig, EosjsRes, ExchRate, 
     Quantity, 
     SwapFactor, 
@@ -12,7 +12,8 @@ import { calcQuantity, calcSwapFactor } from "../utils/helpers";
 import { MainContext } from "../components/Layout";
 import { UALContext } from 'ual-reactjs-renderer';
 import { steakInfo } from "../data";
-import H3 from "../components/H3";
+import H3 from "../components/text/H3";
+import Spinner from "../components/Spinner";
 
 const CpuBoost = () => {
     const [config, setConfig] = useState<CpuConfig[]>();
@@ -155,13 +156,13 @@ const CpuBoost = () => {
     return (
         <section className="text-blue-200 flex flex-col
             items-center justify-center">
-            <article className="flex flex-col mt-8 md:mt-16 shadow-2xl
+            <article className="flex flex-col mt-8 md:mt-16
                 md:border border-blue-300 p-4 md:p-16 rounded-3xl
                 justify-center items-center text-center
                 transition duration-300 w-full md:w-4/5 lg:w-2/3">
                 {
                     (config && curConfig !== undefined)
-                        && (
+                        ? (
                             <>
                                 <H1
                                     text={`boost your CPU by`}
@@ -242,12 +243,15 @@ const CpuBoost = () => {
                                             ? (
                                                 <H2
                                                     text={handleRewardText}
-                                                className='capitalize' />
+                                                    className='capitalize' />
                                             )
                                             : <></>
                                     }
                                 </div>
                             </>
+                        )
+                        : (
+                            <Spinner />
                         )
                 }
             </article>

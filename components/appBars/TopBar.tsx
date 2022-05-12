@@ -1,11 +1,12 @@
 import React, { useContext, useEffect, useState } from "react";
-import Button from "./Button";
+import Button from "../Button";
 import { UALContext } from 'ual-reactjs-renderer';
-import SearchBar from "./SearchBar";
+import SearchBar from "../filters/SearchBar";
 
 const TopBar = () => {
     const [addr, setAddr] = useState('');
     const ual: any = useContext(UALContext);
+    const [query, setQuery] = useState('');
 
     const login = () => {
         ual.logout();
@@ -25,7 +26,11 @@ const TopBar = () => {
     return (
         <header className="md:ml-24 flex justify-between px-4
             md:px-8 py-4 border-b border-gray-800">
-            <SearchBar />
+            <SearchBar
+                placeHolder="search a collection"
+                query={query}
+                setQuery={setQuery}
+                className={undefined} />
             <Button name={ addr ? 'wallet' : 'login' } 
                 onClick={addr ? () => {} : login}
                 variant="filled"

@@ -1,3 +1,5 @@
+import { Dispatch, SetStateAction } from "react"
+
 export type Data = {
     data: any,
     error: string
@@ -75,9 +77,16 @@ export type Tag = {
 export type AlertState = 'success' | 'warning' | 'danger' | 'processing' |
     'closed' | 'info'
 
-export type Alert = {
+export type AlertStateParams = {
     state: AlertState,
     message: string | undefined
+}
+
+export type AlertParams = {
+    state: AlertState,
+    message: string | undefined,
+    closeAlert: () => void,
+    className: string | undefined
 }
 
 export type ValidCpuTokens = 'WAX' | 'STEAK'
@@ -137,4 +146,132 @@ export type ValidCpuConfig = 0 | 1
 
 export type Transaction = {
     transactionId: string
+}
+
+export type BigSelect = { 
+    data: Data | undefined,
+    setSelect: any,
+    setDefault: any
+}
+
+export type SearchBar = {
+    placeHolder: string,
+    query: string,
+    setQuery: Dispatch<SetStateAction<string>>
+    className: string | undefined
+}
+
+export type AssetsQuery = {
+    collection_name: string | undefined,
+    schema_name: string | undefined,
+    template_id: string | undefined,
+    owner: string,
+    search: string | undefined,
+    page: number,
+    limit: number,
+    order: 'desc' | 'asc',
+    sort: 'asset_id' | 'minted' | 'template_mint'
+}
+
+export type AtomicRes = {
+    success: boolean,
+    data: any,
+    query_time: number
+}
+
+export type Collecton = {
+    collection_name: string,
+    name: string,
+    author: string,
+    allow_notify: boolean,
+    authorized_accounts: string[],
+    notify_accounts: string[],
+    market_fee: number,
+    created_at_block: string,
+    created_at_time: string
+}
+
+export type Schema = {
+    schema_name: string
+}
+
+export type Template = {
+    template_id: string,
+    max_supply: string,
+    issued_supply: string,
+    is_transferable: boolean,
+    is_burnable: boolean,
+    immutable_data: any,
+    created_at_block: string,
+    created_at_time: string
+}
+
+export type BackedTokens = {
+    token_contract: string,
+    token_symbol: string,
+    token_precision: number,
+    amount: string
+}
+
+export type Asset = {
+    contract: string,
+    asset_id: string,
+    owner: string,
+    name: string,
+    is_transferable: boolean,
+    is_burnable: boolean,
+    template_mint: string,
+    collection: Collecton,
+    schema: Schema,
+    template: Template,
+    backed_tokens: BackedTokens[],
+    immutable_data: any,
+    mutable_data: any,
+    data: any,
+    burned_by_account: string,
+    burned_at_block: string,
+    burned_at_time: string,
+    updated_at_block: string,
+    updated_at_time: string,
+    transferred_at_block: string,
+    transferred_at_time: string,
+    minted_at_block: string,
+    minted_at_time: string
+}
+
+export type AssetCardParams = {
+    params: Asset
+}
+
+export type MediaType = 'img' | 'video'
+
+export type MediaProvider = 'ipfs' | 'resized'
+
+export type Media = {
+    src: string | undefined,
+    alt: string | undefined,
+    h: string,
+    w: string,
+    type: MediaType
+    provider: MediaProvider,
+    className: string | undefined
+}
+
+export type CardMedia = {
+    src: string | undefined,
+    alt: string,
+    type: MediaType
+    provider: MediaProvider,
+    className: string | undefined
+}
+
+export type CollectionTag = {
+    name: string,
+    id: string,
+    className: string | undefined
+}
+
+export type MintTag = {
+    text: string,
+    className: string | undefined
 }
