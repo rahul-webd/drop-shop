@@ -7,11 +7,13 @@ import H2 from "../components/text/H2";
 import H3 from "../components/text/H3";
 import Media from "../components/media/Media";
 import Tag from "../components/Tag";
-import { Data, ShopItem } from "../schemas/global";
-import { getDrop, getTemplates } from "../utils/api";
-import { convertMillisToTime, getMillisLeft, 
-    isTimeEnded } from "../utils/helpers";
+import { AtomicRes, Data, ShopItem, Template } from "../schemas/global";
+import { getDrop } from "../utils/api";
+import { convertMillisToTime, getErrorAlertParams, getMillisLeft, 
+    isTimeEnded, 
+    noDataFoundParams} from "../utils/helpers";
 import { MainContext } from '../components/Layout';
+import { getTemplate } from "../utils/atomicAssets";
 
 type DropData = {
     drop: ShopItem | undefined,
@@ -19,39 +21,6 @@ type DropData = {
 }
 
 type Drop = DropData | undefined;
-
-const getData = async (memo: string) => {
-    const dropData: Data = await getDrop(memo);
-    let drop: ShopItem | undefined = undefined;
-    let immData: any = undefined;
-
-    if (dropData && !dropData.error && dropData.data) {
-        drop = dropData.data;
-
-        if (drop?.item.Memo) {
-            const memo = drop.item.Memo;
-
-            const templateData: Data = 
-                await getTemplates(memo, undefined);
-
-            if (templateData && !templateData.error
-                    && templateData.data) {
-
-                let i: any = templateData.data[0]
-                    .TemplateData.immutable_data
-                
-                if (i) {
-                    immData = i;
-                }
-            }
-        }
-    }
-
-    return {
-        drop,
-        immData
-    }
-}
 
 const DropPage: NextPage = () => {
     const router = useRouter();
@@ -62,34 +31,95 @@ const DropPage: NextPage = () => {
     const [startTimeLeft, setStartTimeLeft] = 
         useState('- days, --:--:--');
 
-    const { buyShopItem } = useContext(MainContext);
+    const { buyShopItem, setAlert } = useContext(MainContext);
 
     useEffect(() => {
         let isMounted = true;
 
-        if (memo && typeof memo === 'string') {
-            getData(memo).then((data: DropData) => {
-
-                if (data.drop && data.immData) {
-                    isMounted && setData(data);
-
-                    const l = data.drop.limits;
-
-                    if (l) {
-                        isMounted
-                        && setIsDropEnded(isTimeEnded(l.StopTime));
-
-                        isMounted
-                        && setMsLeft(getMillisLeft(l.StartTime));
-                    }
-                }
-            })
-        }
+        handleDropData();
 
         return () => {
             isMounted = false;
         }
-    }, []);
+    }, [memo]);
+
+    const handleDropData = async () => {
+
+        if (memo && typeof memo === 'string') {
+
+            const dropData: Data = await getDrop(memo);
+            let drop: ShopItem | undefined = undefined;
+            let immData: any = undefined;
+
+            if (dropData && !dropData.error && dropData.data) {
+                drop = dropData.data;
+
+                if (drop?.item.Memo) {
+                    const id: string = drop.item.TemplateId.toString();
+
+                    const d: Data = 
+                        await getTemplate(id);
+
+                    if (!d.error && d.data) {
+
+                        const a: AtomicRes = d.data;
+
+                        if (a.success && a.data) {
+
+                            const ts: Template[] = a.data;
+
+                            if (ts.length) {
+
+                                const t: Template = ts[0]
+
+                                let i: any = t.immutable_data;
+
+                                if (i) {
+                                    immData = i;
+
+                                    let d: DropData = {
+                                        drop,
+                                        immData: i
+                                    }
+
+                                    setData(d);
+
+                                    if (drop.limits) {
+
+                                        const { StartTime, StopTime } 
+                                            = drop.limits;
+    
+                                        setIsDropEnded(isTimeEnded(StopTime));
+                                        setMsLeft(getMillisLeft(StartTime));
+
+                                    }
+                                } else {
+
+                                    setAlert(getErrorAlertParams(`no 
+                                        immutable  data found on template`))
+                                }
+                            } else {
+
+                                setAlert(noDataFoundParams);
+                            }
+                        } else {
+
+                            setAlert(getErrorAlertParams(a.data));
+                        }
+                    } else {
+
+                        setAlert(getErrorAlertParams(d.error))
+                    }
+                }
+            } else {
+
+                setAlert(getErrorAlertParams(dropData.error))
+            }
+        } else {
+
+            setAlert(noDataFoundParams);
+        }
+    }
 
     useEffect(() => {
         let isMounted = true;

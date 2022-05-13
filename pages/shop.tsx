@@ -1,6 +1,6 @@
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useContext, useEffect, useState } from "react";
 import BigSelect from "../components/filters/BigSelect";
-import { Data, Drop, ShopItems } from "../schemas/global";
+import { AtomicRes, Data, Drop, ShopItems, Template, TemplateObj } from "../schemas/global";
 import { getCollectionDrops, getCollectionNames, getShopItems, 
     getTemplates } from "../utils/api";
 import type { NextPage } from "next";
@@ -8,82 +8,127 @@ import Container from "../components/Container";
 import Button from "../components/Button";
 import Spinner from "../components/Spinner";
 import ShopItem from "../components/shop/ShopItem";
+import { MainContext } from "../components/Layout";
+import { closeAlertParams, getErrorAlertParams, noDataFoundParams } from "../utils/helpers";
+import { getTemplatesByIds } from "../utils/atomicAssets";
 
 const defaultCol: string = 'all';
 
-const getDrops = async (colName: string, lowerBound: string) => {
-
-    let shopItems: Data = {
-        data: '',
-        error: ''
-    };
-
-    if (colName === defaultCol) {
-        shopItems = await getShopItems(lowerBound, 10);
-    } else if (colName) {
-        shopItems = await getCollectionDrops(colName, lowerBound, 10);
-    }
-
-    let templates: Data = {
-        data: [],
-        error: ''
-    }
-    let drops: Drop[] = [];
-
-    if (shopItems && !shopItems.error && shopItems.data) {
-        const items: ShopItems = shopItems.data;
-
-        const ids: string[] = [];
-
-        for (const name in items) {
-            ids.push(items[name].item.Memo);
-        }
-
-        if (ids.length) {
-            templates = await getTemplates(undefined, ids);
-
-            const itemValues = Object.values(items);
-            drops = itemValues.map((iv, i) => {
-                return {
-                    ...iv,
-                    templateData: templates.data[i].TemplateData
-                }
-            })
-        }
-    }
-
-    const nextKey = drops.length 
-        ? drops[drops.length - 1].item.Memo
-        : '';
-
-    return { drops, nextKey }
-} 
-
-const getData = async () => {
-    const collectionNames: Data = await getCollectionNames();
-
-    return {
-        collectionNames
-    }
-}
-
 const Shop: NextPage = () => {
-    const [colData, setColData]: [
-        colData: Data | undefined,
-        setColData: Dispatch<SetStateAction<Data | undefined>>
-    ] = useState();
+    const [colData, setColData] = useState<Data | undefined>();
+    const [drops, setDrops] = useState<Drop[] | undefined>();
+    const [currentCol, setCurrentCol] = useState<string>('');
+    const [lowerBound, setLowerBound] = useState<string>('');
+    const [fetchingNext, setFetchingNext] = useState<boolean>(false);
+    const { setAlert } = useContext(MainContext);
 
-    const [drops, setDrops]: [
-        Drop[] | undefined,
-        Dispatch<SetStateAction<Drop[] | undefined>>
-    ] = useState();
+    useEffect(() => {
+        handleCollectionNames();
+    }, []);
 
-    const [currentCol, setCurrentCol]: [
-        string,
-        Dispatch<SetStateAction<string>>
-    ] = useState('');
+    useEffect(() => {
+        
+        setDrops(undefined);
+        changeDrops('');
 
-    const [lowerBound, setLowerBound] = useState('');
+    }, [currentCol]);
+
+    const changeDrops = async (lowerBound: string) => {
+        setAlert(closeAlertParams);
+        
+        let shopItems: Data = {
+            data: '',
+            error: ''
+        };
+    
+        if (currentCol === defaultCol) {
+            shopItems 
+                = await getShopItems(lowerBound, 10);
+        } else if (currentCol) {
+            shopItems 
+                = await getCollectionDrops(currentCol, lowerBound, 10);
+        }
+    
+        let templates: Data = {
+            data: [],
+            error: ''
+        }
+        let drops: Drop[] = [];
+    
+        if (shopItems && !shopItems.error && shopItems.data) {
+            const items: ShopItems = shopItems.data;
+    
+            const ids: string[] = [];
+    
+            for (const name in items) {
+                ids.push(items[name].item.TemplateId.toString());
+            }
+    
+            if (ids.length) {
+                templates = await getTemplatesByIds(ids);
+
+                if (!templates.error && templates.data) {
+
+                    const a: AtomicRes = templates.data;
+
+                    if (a.success && a.data) {
+
+                        const d: Template[] = a.data;
+
+                        if (d.length) {
+
+                            let t: TemplateObj = {}
+
+                            for (const v of d) {
+
+                                t[v.template_id] = v
+                            }
+
+                            const itemValues = Object.values(items);
+                            drops = itemValues.map((iv) => {
+                                return {
+                                    ...iv,
+                                    templateData: t[iv.item.TemplateId]
+                                }
+                            })
+
+                            const nextKey = drops.length 
+                                ? drops[drops.length - 1].item.Memo
+                                : '';
+
+                                if (lowerBound) {
+                                    setDrops(prev => prev?.concat(drops));
+                                } else {
+                                    setDrops(drops);
+                                }
+                                setLowerBound(nextKey);
+                        } else {
+
+                            setAlert(noDataFoundParams);
+                        }
+                    } else {
+
+                        setAlert(getErrorAlertParams(a.data));
+                    }
+                } else {
+
+                    setAlert(getErrorAlertParams(templates.error));
+                }
+            } else {
+
+                setAlert(noDataFoundParams);
+            }
+        } else {
+
+            setAlert(getErrorAlertParams(shopItems.error));
+        }
+    }
+
+    const handleCollectionNames = async () => {
+
+        const collectionNames: Data = await getCollectionNames();
+        setColData(collectionNames);
+    }
 
     const changeCurrentCol = (name: string) => {
         setCurrentCol(name);
@@ -93,45 +138,10 @@ const Shop: NextPage = () => {
         setCurrentCol(defaultCol);
     }
 
-    const [fetchingNext, setFetchingNext] = useState(false);
-
-    const changeDrops = async (lowerBound: string) => {
-        await getDrops(currentCol, lowerBound).then(data => {
-            if (lowerBound) {
-                setDrops(prev => prev?.concat(data.drops));
-            } else {
-                setDrops(data.drops);
-            }
-            setLowerBound(data.nextKey);
-        });
-    }
-
-    useEffect(() => {
-        let isMounted = true;
-
-        getData().then(data => { 
-            isMounted && setColData(data.collectionNames);
-        });
-
-        return () => {
-            isMounted = false;
-        }
-    }, []);
-
-    useEffect(() => {
-        let isMounted = true;
-        
-        isMounted && setDrops(undefined);
-
-        changeDrops('');
-
-        return () => {
-            isMounted = false;
-        }
-    }, [currentCol]);
-
     const loadMore = () => {
+
         setFetchingNext(true);
+
         changeDrops(lowerBound).then(() => {
             setFetchingNext(false);
         })

@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction } from "react"
+import { Dispatch, ReactNode, SetStateAction } from "react"
 
 export type Data = {
     data: any,
@@ -161,6 +161,12 @@ export type SearchBar = {
     className: string | undefined
 }
 
+type Order = 'desc' | 'asc'
+
+export type QueryParams = {
+    [name: string]: any
+}
+
 export type AssetsQuery = {
     collection_name: string | undefined,
     schema_name: string | undefined,
@@ -169,8 +175,18 @@ export type AssetsQuery = {
     search: string | undefined,
     page: number,
     limit: number,
-    order: 'desc' | 'asc',
+    order: Order,
     sort: 'asset_id' | 'minted' | 'template_mint'
+}
+
+export type TemplatesQuery = {
+    collection_name: string | undefined,
+    schema_name: string | undefined,
+    ids: string,
+    page: number,
+    limit: number,
+    order: Order,
+    sort: 'created'
 }
 
 export type AtomicRes = {
@@ -203,7 +219,13 @@ export type Template = {
     is_burnable: boolean,
     immutable_data: any,
     created_at_block: string,
-    created_at_time: string
+    created_at_time: string,
+    schema: Schema,
+    name: string
+}
+
+export type TemplateObj = {
+    [templateId: string]: Template
 }
 
 export type BackedTokens = {
@@ -273,5 +295,11 @@ export type CollectionTag = {
 
 export type MintTag = {
     text: string,
+    className: string | undefined
+}
+
+export type LinkInternal = {
+    children: ReactNode,
+    memo: string,
     className: string | undefined
 }

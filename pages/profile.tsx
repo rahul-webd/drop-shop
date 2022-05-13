@@ -4,6 +4,7 @@ import AssetCard from "../components/assets/AssetCard";
 import Button from "../components/Button";
 import { MainContext } from "../components/Layout";
 import Spinner from "../components/Spinner";
+import LoginText from "../components/text/LoginText";
 import { Asset, AssetsQuery, AtomicRes, Data } from "../schemas/global";
 import { getAssets } from "../utils/atomicAssets";
 import { closeAlertParams, getErrorAlertParams, loginAlertParams, noDataFoundParams } from "../utils/helpers";
@@ -93,41 +94,51 @@ const Profile: NextPage = () => {
 
     return (
         <section className="w-full flex flex-col items-center">
-            <div className="flex flex-wrap w-full justify-center
-                mb-4">
-                {
-                    assets && assets.length
-                        ? (
-                            assets.map((asset, i) => {
+            {
+                address
+                    ? (
+                        <>
+                            <div className="flex flex-wrap w-full justify-center
+                                mb-4">
+                                {
+                                    assets && assets.length
+                                        ? (
+                                            assets.map((asset, i) => {
 
-                                return (
-                                    <AssetCard
-                                        key={i}
-                                        params={asset} />
-                                )
-                            })
-                        )
-                        : (
-                            <Spinner />
-                        )
-                }
-            </div>
-            <div className="flex w-full justify-center mb-4">
-                {
-                    loadingNextPage
-                        && (
-                            <Spinner />
-                        )
-                }
-            </div>
-            <div>
-                <Button
-                    name="load more"
-                    variant="outline"
-                    onClick={handleLoadMore}
-                    className=''
-                    disabled={false} />
-            </div>
+                                                return (
+                                                    <AssetCard
+                                                        key={i}
+                                                        params={asset} />
+                                                )
+                                            })
+                                        )
+                                        : (
+                                            <Spinner />
+                                        )
+                                }
+                            </div>
+                            <div className="flex w-full justify-center mb-4">
+                                {
+                                    loadingNextPage
+                                        && (
+                                            <Spinner />
+                                        )
+                                }
+                            </div>
+                            <div>
+                                <Button
+                                    name="load more"
+                                    variant="outline"
+                                    onClick={handleLoadMore}
+                                    className=''
+                                    disabled={false} />
+                            </div>
+                        </>
+                    )
+                    : (
+                        <LoginText />
+                    )
+            }
         </section>
     )
 }

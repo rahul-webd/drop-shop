@@ -8,7 +8,7 @@ import { CpuConfig, EosjsRes, ExchRate,
     ValidCpuConfig,
     ValidCpuTokens} from "../schemas/global";
 import { buyCpu, getCpuConfig, getSteakWaxExchRate } from "../utils/cpu";
-import { calcQuantity, calcSwapFactor } from "../utils/helpers";
+import { calcQuantity, calcSwapFactor, loginAlertParams } from "../utils/helpers";
 import { MainContext } from "../components/Layout";
 import { UALContext } from 'ual-reactjs-renderer';
 import { steakInfo } from "../data";
@@ -22,7 +22,7 @@ const CpuBoost = () => {
     const [amt, setAmt] = useState<string>('');
     const [gift, setGift] = useState<boolean>(false);
     const [receiver, setReceiver] = useState<string>('');
-    const { setAlert } = useContext(MainContext);
+    const { address, setAlert } = useContext(MainContext);
     const ual = useContext(UALContext);
 
     useEffect(() => {
@@ -107,49 +107,56 @@ const CpuBoost = () => {
     }
 
     const handleBuyCpu = async () => {
-        if (amt && config && (curConfig !== undefined)) {
+        if (address) {
 
-            const defaultMemo: string = 'caittoken.io';
-            let qty: string = '';
-            let sym: ValidCpuTokens = 'WAX';
-            let memo: string = '';
+            if (amt && config && (curConfig !== undefined)) {
 
-            if (curConfig === 0) {
-
-                const w = `WAX`;
-                qty = `${Number(amt).toFixed(8)} ${w}`
-                sym = w
-
-            } else if (curConfig === 1) {
-
-                const s = `STEAK`;
-                qty = `${Number(amt).toFixed(4)} ${s}`
-                sym = s
+                const defaultMemo: string = 'caittoken.io';
+                let qty: string = '';
+                let sym: ValidCpuTokens = 'WAX';
+                let memo: string = '';
+    
+                if (curConfig === 0) {
+    
+                    const w = `WAX`;
+                    qty = `${Number(amt).toFixed(8)} ${w}`
+                    sym = w
+    
+                } else if (curConfig === 1) {
+    
+                    const s = `STEAK`;
+                    qty = `${Number(amt).toFixed(4)} ${s}`
+                    sym = s
+                }
+    
+                if (gift) {
+                    memo = receiver;
+                } else {
+                    memo = defaultMemo
+                }
+    
+                const res = await buyCpu(ual, qty, memo, sym);
+    
+                if (!res.error && res.data) {
+                    let t: Transaction = res.data;
+    
+                    setAlert({
+                        state: 'success',
+                        message: `transaction success with 
+                            Id ${t.transactionId}`
+                    });
+                } else {
+    
+                    setAlert({
+                        state: 'danger',
+                        message: res.error.toString()
+                    });
+                }
             }
+    
+        } else {
 
-            if (gift) {
-                memo = receiver;
-            } else {
-                memo = defaultMemo
-            }
-
-            const res = await buyCpu(ual, qty, memo, sym);
-
-            if (!res.error && res.data) {
-                let t: Transaction = res.data;
-
-                setAlert({
-                    state: 'success',
-                    message: `transaction success with 
-                        Id ${t.transactionId}`
-                });
-            } else {
-
-                setAlert({
-                    state: 'danger',
-                    message: res.error.toString()
-                });
-            }
+            setAlert(loginAlertParams)
         }
     }
 

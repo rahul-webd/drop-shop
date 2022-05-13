@@ -1,4 +1,5 @@
 import { AlertStateParams, Data, fetchOptions, Quantity, 
+    QueryParams, 
     SwapFactor } from "../schemas/global";
 import { JsonRpc } from 'eosjs';
 import { rpcProviders } from "../data";
@@ -211,7 +212,7 @@ export const closeAlertParams: AlertStateParams = {
 }
 
 export const loginAlertParams: AlertStateParams = {
-    state: 'warning',
+    state: 'success',
     message: 'please login'
 }
 
@@ -241,4 +242,27 @@ export const getSuccessAlertParams
 export const noDataFoundParams: AlertStateParams = {
     state: 'warning',
     message: 'no data found'
+}
+
+export const joinIds = (ids: string[]): string => {
+
+    const separator: string = '%2C';
+    return ids.join(separator);
+}
+
+export const makeQuery = (queryParams: QueryParams): string => {
+
+    let query: string = '';
+
+    for (const param in queryParams) {
+
+        let d: any = (queryParams as any)[param]
+        if (d) {
+
+            query = addAmpersand(query);
+            query += `${param}=${d}`;
+        }
+    }
+
+    return query;
 }

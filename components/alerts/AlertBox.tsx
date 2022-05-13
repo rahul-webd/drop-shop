@@ -66,7 +66,7 @@ const AlertBox = ({ state, message, closeAlert,
                                 className='mb-8 text-base md:text-lg' />
                             <Button
                                 name='OK'
-                                onClick={() => {closeAlert}}
+                                onClick={closeAlert}
                                 variant='filled'
                                 className='px-8 text-sm'
                                 disabled={undefined} />

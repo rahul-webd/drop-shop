@@ -2,7 +2,8 @@ import Link from "next/link";
 import { useContext, useEffect, useState } from "react";
 import { Drop } from "../../schemas/global";
 import { convertMillisToTime, getMillisLeft, 
-    isTimeEnded } from "../../utils/helpers";
+    isTimeEnded, 
+    loginAlertParams} from "../../utils/helpers";
 import Button from "../Button";
 import H3 from "../text/H3";
 import H4 from "../text/H4";
@@ -10,6 +11,7 @@ import Media from "../media/Media";
 import Tag from "../Tag";
 import { MainContext } from "../Layout";
 import CardMedia from "../media/CardMedia";
+import LinkDrop from "../links/LinkDrop";
 
 const ShopItem = ({ item }: { 
     item: Drop
@@ -18,8 +20,7 @@ const ShopItem = ({ item }: {
     const [msLeft, setMsLeft] = useState(0);
     const [startTimeLeft, setStartTimeLeft] = 
         useState('- days, --:--:--');
-
-    const { buyShopItem } = useContext(MainContext);
+    const { buyShopItem, setAlert, address } = useContext(MainContext);
 
     const { limits } = item;
 
@@ -75,6 +76,17 @@ const ShopItem = ({ item }: {
         }
     }, []);
 
+    const handleBuyDrop = async () => {
+
+        if (address) {
+
+            await buyShopItem(quantity, contract, Memo);
+        } else {
+
+            setAlert(loginAlertParams)
+        }
+    }
+
     return (
         <section className="bg-gray-900 m-4 flex flex-col justify-center
             items-center text-center p-4 w-52 rounded-xl shadow-md
@@ -83,23 +95,23 @@ const ShopItem = ({ item }: {
                 {
                     item.templateData
                         && (
-                            <Link href={`./drop?memo=${Memo}`}>
-                                <a className="flex flex-col items-center">
-                                    <CardMedia 
-                                        src={img || video}
-                                        alt={name}
-                                        type={(img && "img") || (video && "video")}
-                                        provider="ipfs"
-                                        className="" />
-                                </a>
-                            </Link>
+                            <LinkDrop memo={Memo} className=''>
+                                <CardMedia 
+                                    src={img || video}
+                                    alt={name}
+                                    type={(img && "img") || (video && "video")}
+                                    provider="ipfs"
+                                    className="" />
+                            </LinkDrop>
                         )
                 }
             </div>
             {
                 item.item
                     && <div className="flex flex-col items-center">
-                        <H3 text={name} className='mb-1' />
+                        <LinkDrop memo={Memo} className=''>
+                            <H3 text={name} className='mb-1' />
+                        </LinkDrop>
                         <H4 
                             text={CollectionName} 
                             className='text-green-200 mb-2' />
@@ -134,9 +146,7 @@ const ShopItem = ({ item }: {
                             className='text-blue-100 capitalize mb-2' />
                         <Button
                             name="buy"
-                            onClick={() => { 
-                                buyShopItem(quantity, contract, Memo);
-                            }}
+                            onClick={handleBuyDrop}
                             variant='filled'
                             className="px-6 py-1"
                             disabled={isDropEnded || msLeft !== 0} />
