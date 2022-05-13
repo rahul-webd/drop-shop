@@ -31,7 +31,7 @@ const TopBar = () => {
                 query={query}
                 setQuery={setQuery}
                 className={undefined} />
-            <Button name={ addr ? 'wallet' : 'login' } 
+            <Button name={ addr ? addr : 'login' } 
                 onClick={addr ? () => {} : login}
                 variant="filled"
                 className={undefined}
