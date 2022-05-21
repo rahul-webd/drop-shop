@@ -1,23 +1,29 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Media } from "../../schemas/global";
+import { resize } from "../../utils/api";
 import Spinner from "../Spinner";
 
 const Media = ({ src, alt, h, w, type, provider, className }: Media) => {
 
-    const [mediaLoaded, setMediaLoaded] = useState(false);
+    const [mediaLoaded, setMediaLoaded] = useState<boolean>(false);
     const [err, setErr] = useState('');
+    const [triedFallBack, setTriedFallBack] = useState<boolean>(false);
+    const [url, setUrl] = useState<string>();
 
-    const ipfs = 'https://ipfs.io/ipfs';
-    const resizedIpfs = 'http://ipfs-resizer.ledgerwise.io/api/v1/resized';
-    const size = '200';
+    const ipfs = `https://ipfs.io/ipfs/${src}`;
+    const resizedIpfs 
+        = `https://storage.googleapis.com/cait-49fc0.appspot.com/resized/${src}`;
 
-    let url: string = ``;
+    useEffect(() => {
+        setUrl(resizedIpfs);
+    }, [src]);
 
-    if (provider === 'ipfs') {
-        url = `https://ipfs.io/ipfs/${src}`;
-    } else if (provider === 'resized') {
-        url = `${resizedIpfs}?cid=${src}&size=${size}`;
+    const tryOriginal = () => {
+        resize(src);
+        setUrl(ipfs);
+        setTriedFallBack(true);
     }
+
 
     return (
         <div className={`${h} ${w} rounded relative
@@ -40,6 +46,7 @@ const Media = ({ src, alt, h, w, type, provider, className }: Media) => {
                     && <img 
                             src={url} 
                             alt={alt || 'no image found'}
+                            loading='lazy'
                             className={`${h} ${w} rounded object-contain
                                 transition 
                                 duration-1000 hover:scale-150`}
@@ -47,20 +54,37 @@ const Media = ({ src, alt, h, w, type, provider, className }: Media) => {
                                 setMediaLoaded(true)
                             }}
                             onError={e => {
-                                const ecn = e.currentTarget.nodeValue;
-                                if (ecn) setErr(ecn)
+                                if (!triedFallBack) {
+                                    tryOriginal();
+                                } else {
+                                    const ecn = e.currentTarget.nodeValue;
+                                    if (ecn) setErr(ecn)
+                                }
                             }} />
                 || type === 'video'
-                    && <iframe
+                    && <video
+                            controls
+                            autoPlay
+                            loop
                             src={url}
                             title={alt || 'no video found'}
                             className={`object-contain ${h} ${w} rounded`}
+                            onLoadStart={
+                                () => {
+                                    setMediaLoaded(true);
+                                }
+                            }
                             onLoad={() => {
+                                console.log('loaded');
                                 setMediaLoaded(true)
                             }}
                             onError={e => {
-                                const ecn = e.currentTarget.nodeValue;
-                                if (ecn) setErr(ecn)
+                                if (!triedFallBack) {
+                                    tryOriginal();
+                                } else {
+                                    const ecn = e.currentTarget.nodeValue;
+                                    if (ecn) setErr(ecn)
+                                }
                             }} />
             }
         </div>

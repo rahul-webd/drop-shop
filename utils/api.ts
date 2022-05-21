@@ -64,6 +64,18 @@ export const getDrop = async (name: string) => {
     return data;
 }
 
+export const resize = async (hash: string | undefined) => {
+
+    const endpoint: string = 'resize';
+
+    const data = {
+        hash
+    }
+    const options: fetchOptions = getPostOptions(data);
+
+    const res = await fetcher(`${shopApi}/${endpoint}`, options);
+}
+
 const getPostOptions = (body: any): fetchOptions => {
 
     return {
